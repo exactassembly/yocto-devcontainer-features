@@ -47,10 +47,15 @@ sudo_if() {
 sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir git+https://github.com/cpb-/yocto-cooker.git"
 
 mkdir -p /opt/cooker/scripts
-cp -f "${FEATURE_DIR}/configure-cooker.sh" /opt/cooker/scripts/
-chmod +rx /opt/cooker/scripts/configure-cooker.sh
-cat <<EOF > /opt/cooker/scripts/cooker.env
-export COOKER_MENU_FILE="${COOKER_MENU_FILE}"
-export COOKER_SSTATE_CACHE_DIR="${COOKER_SSTATE_CACHE_DIR}"
-export COOKER_DLCACHE_DIR="${COOKER_DLCACHE_DIR}"
-EOF
+#cp -f "${FEATURE_DIR}/configure-cooker.sh" /opt/cooker/scripts/
+#chmod +rx /opt/cooker/scripts/configure-cooker.sh
+touch /opt/cooker/scripts/cooker.env
+if [ "$COOKER_MENU_FILE" != "" ]; then
+    echo "export COOKER_MENU_FILE=\"${COOKER_MENU_FILE}\"" >> /opt/cooker/scripts/cooker.env
+fi
+if [ "$COOKER_SSTATE_CACHE_DIR" != "" ]; then
+    echo "export COOKER_SSTATE_CACHE_DIR=\"${COOKER_SSTATE_CACHE_DIR}\"" >> /opt/cooker/scripts/cooker.env
+fi
+if [ "$COOKER_DLCACHE_DIR" != "" ]; then
+    echo "export COOKER_DLCACHE_DIR=\"${COOKER_DLCACHE_DIR}\"" >> /opt/cooker/scripts/cooker.env
+fi
