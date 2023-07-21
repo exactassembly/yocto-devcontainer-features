@@ -1,0 +1,14 @@
+{
+    "id": "yocto-cooker",
+    "name": "Yocto build automation",
+    "version": "0.0.1",
+    "description": "This feature installs a python wrapper for Yocto/bitbake",
+    "containerEnv": {
+        "COOKER_MENU_FILE" : "cooker-menu.json",
+        "COOKER_SSTATE_CACHE_DIR" : "/var/lib/sstate-cache",
+        "COOKER_DLCACHE_DIR" : "/var/lib/dl-cache"
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/python"
+    ]
+}
