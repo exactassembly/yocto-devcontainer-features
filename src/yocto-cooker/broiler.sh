@@ -5,8 +5,8 @@
 #-------------------------------------------------------------------------------------------------------------
 set -e
 
-COOKER_BUILD_DIR="${COOKER_BUILD_DIR:-"~/yocto-build"}"
-COOKER_LAYERS_DIR="${COOKER_LAYERS_DIR:-"~/yocto-layers"}"
+COOKER_BUILD_DIR="${COOKER_BUILD_DIR:-"/home/${USER}/yocto-build"}"
+COOKER_LAYERS_DIR="${COOKER_LAYERS_DIR:-"/home/${USER}/yocto-layers"}"
 COOKER_MENU_DIR="${COOKER_MENU_DIR:-"/workspace"}"
 COOKER_MENU_FILE="${COOKER_MENU_FILE:-"cooker-menu.json"}"
 
