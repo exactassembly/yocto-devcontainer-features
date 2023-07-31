@@ -47,8 +47,8 @@ sudo_if() {
 sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir git+https://github.com/cpb-/yocto-cooker.git"
 
 mkdir -p /opt/cooker/scripts
-#cp -f "${FEATURE_DIR}/configure-cooker.sh" /opt/cooker/scripts/
-#chmod +rx /opt/cooker/scripts/configure-cooker.sh
+cp -f "${FEATURE_DIR}/broiler.sh" /opt/cooker/scripts/
+chmod +rx /opt/cooker/scripts/broiler.sh
 touch /opt/cooker/scripts/cooker.env
 if [ "$COOKER_MENU_FILE" != "" ]; then
     echo "export COOKER_MENU_FILE=\"${COOKER_MENU_FILE}\"" >> /opt/cooker/scripts/cooker.env
