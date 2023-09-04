@@ -7,7 +7,7 @@ This feature installs a python wrapper for Yocto/bitbake
 
 ```json
 "features": {
-    "ghcr.io/exactassembly/yocto-devcontainer-features/yocto-cooker:0": {}
+    "ghcr.io/exactassembly/yocto-devcontainer-features/yocto-cooker:1": {}
 }
 ```
 
