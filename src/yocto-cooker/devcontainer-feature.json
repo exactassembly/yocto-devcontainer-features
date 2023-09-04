@@ -1,7 +1,7 @@
 {
     "id": "yocto-cooker",
     "name": "Yocto build automation",
-    "version": "0.0.4",
+    "version": "1.3.1",
     "description": "This feature installs a python wrapper for Yocto/bitbake",
     "containerEnv": {
         "COOKER_MENU_FILE" : "cooker-menu.json",

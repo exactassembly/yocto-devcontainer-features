@@ -44,7 +44,7 @@ sudo_if() {
     fi
 }
 
-sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir git+https://github.com/cpb-/yocto-cooker.git"
+sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir git+https://github.com/exactassembly/yocto-cooker.git@rc-1.3.1"
 
 mkdir -p /opt/cooker/scripts
 cp -f "${FEATURE_DIR}/broiler.sh" /opt/cooker/scripts/
