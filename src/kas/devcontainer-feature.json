@@ -1,0 +1,28 @@
+{
+    "id": "kas",
+    "name": "kas Yocto build orchestrator",
+    "version": "1.0.0",
+    "description": "Installs the kas (Siemens) build automation tool for Yocto/bitbake projects. Pip-installs a pinned kas release and ships a shell wrapper that drives common build steps (init, build, shell, cleansstate) using project-scoped sstate-cache and downloads directories.",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "5.2",
+            "description": "kas version pinned for pip install. Use '5.2' (current as of Feb 2026) for reproducible builds; use 'latest' to track upstream (not recommended for CI)."
+        },
+        "menu_file": {
+            "type": "string",
+            "default": "kas-menu.yml",
+            "description": "Default kas configuration YAML the wrapper script targets when no explicit file is provided. Resolved relative to KAS_MENU_DIR (the project workspace by default)."
+        }
+    },
+    "containerEnv": {
+        "KAS_MENU_FILE": "kas-menu.yml",
+        "KAS_BUILD_DIR": "/var/lib/kas-build",
+        "SSTATE_DIR": "/var/lib/sstate-cache",
+        "DL_DIR": "/var/lib/dl-cache"
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/python"
+    ],
+    "postStartCommand": "git config --global --add safe.directory '*'"
+}

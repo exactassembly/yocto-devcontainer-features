@@ -33,7 +33,11 @@ elif [ "${USERNAME}" = "none" ] || ! id -u ${USERNAME} > /dev/null 2>&1; then
 fi
 
 FEATURE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PYTHON_SRC=$(which python)
+PYTHON_SRC="$(command -v python3 || command -v python)"
+if [ -z "${PYTHON_SRC}" ]; then
+    echo "ERROR: yocto-cooker feature requires Python on PATH. Add the python feature before yocto-cooker." >&2
+    exit 1
+fi
 
 sudo_if() {
     COMMAND="$*"
@@ -44,7 +48,14 @@ sudo_if() {
     fi
 }
 
-sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir git+https://github.com/exactassembly/yocto-cooker.git@rc-1.3.1"
+# 1.4.0 is the latest upstream release (2023-10-31). Installs cleanly from PyPI.
+COOKER_VERSION="${VERSION:-1.4.0}"
+if [ "${COOKER_VERSION}" = "latest" ]; then
+    PIP_SPEC="yocto-cooker"
+else
+    PIP_SPEC="yocto-cooker==${COOKER_VERSION}"
+fi
+sudo_if "${PYTHON_SRC}" "-m pip install --user --upgrade --no-cache-dir '${PIP_SPEC}'"
 
 mkdir -p /opt/cooker/scripts
 cp -f "${FEATURE_DIR}/broiler.sh" /opt/cooker/scripts/

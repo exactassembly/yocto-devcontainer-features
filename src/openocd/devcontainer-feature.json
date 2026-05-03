@@ -1,0 +1,26 @@
+{
+    "id": "openocd",
+    "name": "OpenOCD with FT232H support",
+    "version": "1.0.0",
+    "description": "Installs OpenOCD with FTDI/MPSSE support for FT232H-class JTAG/SWD adapters. Defaults to apt's packaged OpenOCD (fast, suffices for FT232H bring-up); can be flipped to from-source for projects that need 0.12.0+ features. Optionally installs the FT232H udev rule so non-root users can claim the adapter.",
+    "options": {
+        "from_source": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, build OpenOCD from source at the pinned version (slow — adds ~5–10 min to image build). If false, install via apt (faster, typically a recent enough version for FT232H work)."
+        },
+        "version": {
+            "type": "string",
+            "default": "0.12.0",
+            "description": "Source-build pin (only used when from_source=true). The git tag/branch to check out from openocd-org/openocd."
+        },
+        "install_udev_rules": {
+            "type": "boolean",
+            "default": true,
+            "description": "Install /etc/udev/rules.d/99-ftdi-ft232h.rules so the FT232H VID:PID 0403:6014 is claimable by users in the plugdev group with uaccess. Harmless inside a container; useful when the container is run with --privileged or with /dev/bus/usb mounted."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}

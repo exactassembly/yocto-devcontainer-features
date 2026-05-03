@@ -1,0 +1,10 @@
+{
+    "id": "yocto-sstate",
+    "name": "Yocto sstate-cache and downloads volumes",
+    "version": "1.0.0",
+    "description": "Declares Docker named volumes for the Yocto sstate-cache and source downloads cache, mounted at the canonical paths used by the kas / yocto-host / yocto-cooker features (/var/lib/sstate-cache and /var/lib/dl-cache). No install script — pure devcontainer-feature.json mounts. Borrowed in spirit from willmmiles/devcontainer-feature-yocto's yocto-sstate feature, with paths aligned to the bitbake convention used by the other features in this repo.",
+    "mounts": [
+        { "source": "yocto-sstate-cache", "target": "/var/lib/sstate-cache",  "type": "volume" },
+        { "source": "yocto-dl-cache",     "target": "/var/lib/dl-cache",      "type": "volume" }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "id": "zephyr-sdk",
+    "name": "Zephyr SDK",
+    "version": "1.0.0",
+    "description": "Downloads and installs a pinned Zephyr SDK release (toolchains for Zephyr RTOS). Optionally installs west via pipx. Pairs well with the kas + yocto-host features when a single container builds both a Yocto host image and Zephyr firmware (e.g., dual-CPU SDKs that ship a Cortex-M firmware alongside a Linux host image).",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "0.17.4",
+            "description": "Zephyr SDK version to download from github.com/zephyrproject-rtos/sdk-ng. Pin to match your firmware's tested SDK. As of May 2026, 0.17.4 is the latest 0.17.x and 1.0.1 is the latest 1.x."
+        },
+        "install_dir": {
+            "type": "string",
+            "default": "/opt",
+            "description": "Parent directory the SDK is unpacked into. The SDK lands at ${install_dir}/zephyr-sdk-${version}. ZEPHYR_SDK_INSTALL_DIR is exported pointing at that path."
+        },
+        "toolchains": {
+            "type": "string",
+            "proposals": ["all", "minimal", "arm-zephyr-eabi", "aarch64-zephyr-elf", "riscv64-zephyr-elf", "x86_64-zephyr-elf"],
+            "default": "minimal",
+            "description": "Which toolchains to keep installed. 'all' downloads the full SDK (~2 GB on disk); 'minimal' downloads the small bundle and lets the user add toolchains later; a specific triple installs only that toolchain. For Cortex-M / Cortex-A53 work pick 'arm-zephyr-eabi' or 'aarch64-zephyr-elf'."
+        },
+        "install_west": {
+            "type": "boolean",
+            "default": true,
+            "description": "Pip-install west alongside the SDK. Most Zephyr workflows need it. Disable if your project ships its own pinned west via a Python venv inside the workspace."
+        }
+    },
+    "containerEnv": {
+        "ZEPHYR_SDK_INSTALL_DIR": "/opt/zephyr-sdk-0.17.4"
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/devcontainers/features/python"
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "id": "yocto-host",
+    "name": "Yocto build host prerequisites",
+    "version": "1.0.0",
+    "description": "Installs the apt packages required by the Yocto build host for a given Yocto release. Replaces the inline apt block typically copied into a project's Dockerfile. Inspired by willmmiles/devcontainer-feature-yocto with current release coverage.",
+    "options": {
+        "release": {
+            "type": "string",
+            "proposals": [
+                "walnascar",
+                "scarthgap",
+                "styhead",
+                "nanbield",
+                "mickledore",
+                "kirkstone",
+                "dunfell"
+            ],
+            "default": "walnascar",
+            "description": "Target Yocto release. Selects the package list and any release-specific quirks (e.g., python2 for pre-3.1 releases). Numeric versions like '5.2' or '4.0' are also accepted."
+        },
+        "install_multilib": {
+            "type": "boolean",
+            "default": true,
+            "description": "On amd64 hosts, also install gcc-multilib / g++-multilib (needed by some legacy Yocto recipes that build i686 helper binaries). Harmless to leave on; turn off to shrink the image."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ],
+    "postStartCommand": "git config --global --add safe.directory '*'"
+}
