@@ -1,7 +1,7 @@
 
-# Yocto build automation (yocto-cooker)
+# Yocto build automation (yocto-cooker) (yocto-cooker)
 
-This feature installs a python wrapper for Yocto/bitbake
+Installs the yocto-cooker meta-tool for assembling Yocto builds from a JSON menu file. NOTE: the upstream yocto-cooker project (cpb-/yocto-cooker) has not shipped a release since 1.4.0 (2023-10-31) and shows minimal recent activity; new projects should consider the 'kas' feature in this repo (Siemens, actively maintained) or the upstream 'bitbake-setup' tool once it stabilizes. This feature is kept maintained for back-compat with existing projects.
 
 ## Example Usage
 
@@ -11,7 +11,11 @@ This feature installs a python wrapper for Yocto/bitbake
 }
 ```
 
+## Options
 
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| version | yocto-cooker version pin. Installed from PyPI when set to a version string. Use 'latest' to track upstream HEAD on PyPI (not recommended for CI). | string | 1.4.0 |
 
 
 

@@ -1,16 +1,13 @@
 
 # OpenOCD with FT232H support (openocd)
 
-Installs OpenOCD with FTDI/MPSSE support for FT232H-class JTAG/SWD adapters. Defaults to apt's packaged OpenOCD; can be flipped to from-source for projects that need 0.12.0+ features.
+Installs OpenOCD with FTDI/MPSSE support for FT232H-class JTAG/SWD adapters. Defaults to apt's packaged OpenOCD (fast, suffices for FT232H bring-up); can be flipped to from-source for projects that need 0.12.0+ features. Optionally installs the FT232H udev rule so non-root users can claim the adapter.
 
 ## Example Usage
 
 ```json
 "features": {
-    "ghcr.io/exactassembly/yocto-devcontainer-features/openocd:1": {
-        "from_source": false,
-        "install_udev_rules": true
-    }
+    "ghcr.io/exactassembly/yocto-devcontainer-features/openocd:1": {}
 }
 ```
 
@@ -18,20 +15,12 @@ Installs OpenOCD with FTDI/MPSSE support for FT232H-class JTAG/SWD adapters. Def
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| from_source | Build OpenOCD from source at the pinned tag instead of apt-installing. Adds ~5–10 min to image build. Use when you need 0.12.0+ features. | boolean | false |
-| version | Git tag (without leading `v`) to build when `from_source=true`. | string | 0.12.0 |
-| install_udev_rules | Install `/etc/udev/rules.d/99-ftdi-ft232h.rules` (FT232H VID:PID `0403:6014`, plugdev/uaccess). | boolean | true |
+| from_source | If true, build OpenOCD from source at the pinned version (slow — adds ~5–10 min to image build). If false, install via apt (faster, typically a recent enough version for FT232H work). | boolean | false |
+| version | Source-build pin (only used when from_source=true). The git tag/branch to check out from openocd-org/openocd. | string | 0.12.0 |
+| install_udev_rules | Install /etc/udev/rules.d/99-ftdi-ft232h.rules so the FT232H VID:PID 0403:6014 is claimable by users in the plugdev group with uaccess. Harmless inside a container; useful when the container is run with --privileged or with /dev/bus/usb mounted. | boolean | true |
 
-## USB passthrough caveats
 
-The udev rule alone doesn't give the container access to a host-attached FT232H. The container has to be run with at least one of:
 
-- `--device /dev/bus/usb/...` exposing the specific device
-- `-v /dev/bus/usb:/dev/bus/usb` exposing the whole USB bus (with `--device-cgroup-rule=c 189:* rmw`)
-- `--privileged`
+---
 
-Inside `devcontainer.json` this lives in the `runArgs:` array. On Docker-on-Mac, USB passthrough into containers is not supported — connect the FT232H to a remote Linux/Windows host and forward the OpenOCD TCP port instead.
-
-## OS Support
-
-Debian / Ubuntu only.
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/exactassembly/yocto-devcontainer-features/blob/main/src/openocd/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
