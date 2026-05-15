@@ -1,6 +1,13 @@
-name: "Release dev container features & Generate Documentation"
+name: "Release dev container features"
 on:
   workflow_dispatch:
+
+# Force JavaScript actions onto Node 24. devcontainers/action@v1 is still
+# shipped pinned to Node 20 (issue devcontainers/action#203). Node 20 hits
+# hard EOL on the GitHub Actions runners on 2026-06-02 and is removed
+# 2026-09-16; this env var keeps the workflow green in the meantime.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
@@ -8,40 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: "Publish Features"
         uses: devcontainers/action@v1
         with:
           publish-features: "true"
           base-path-to-features: "./src"
-          generate-docs: "true"
-          
+          # generate-docs is intentionally disabled. devcontainers/action's
+          # auto-generator emits a thin README per feature derived from the
+          # devcontainer-feature.json options table only, which would
+          # overwrite the richer hand-written READMEs we maintain in each
+          # src/<feature>/README.md. Re-enable only if we move our extra
+          # content into per-feature NOTES.md files (the auto-generator
+          # appends NOTES.md after its own output).
+          generate-docs: "false"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create PR for Documentation
-        id: push_image_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          echo "Start."
-          # Configure git and Push updates
-          git config --global user.email github-actions@github.com
-          git config --global user.name github-actions
-          git config pull.rebase false
-          branch=automated-documentation-update-$GITHUB_RUN_ID
-          git checkout -b $branch
-          message='Automated documentation update'
-          # Add / update and commit
-          git add */**/README.md
-          git commit -m 'Automated documentation update [skip ci]' || export NO_UPDATES=true
-          # Push
-          if [ "$NO_UPDATES" != "true" ] ; then
-              git push origin "$branch"
-              gh pr create --title "$message" --body "$message"
-          fi

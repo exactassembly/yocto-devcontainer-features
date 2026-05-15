@@ -1,7 +1,7 @@
 {
     "id": "yocto-host",
     "name": "Yocto build host prerequisites",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Installs the apt packages required by the Yocto build host for a given Yocto release. Replaces the inline apt block typically copied into a project's Dockerfile. Inspired by willmmiles/devcontainer-feature-yocto with current release coverage.",
     "options": {
         "release": {

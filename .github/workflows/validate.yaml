@@ -3,11 +3,18 @@ on:
   workflow_dispatch:
   pull_request:
 
+# Force JavaScript actions onto Node 24. devcontainers/action@v1 is still
+# shipped pinned to Node 20 (issue devcontainers/action#203). Node 20 hits
+# hard EOL on the GitHub Actions runners on 2026-06-02 and is removed
+# 2026-09-16; this env var keeps the workflow green in the meantime.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: "Validate devcontainer-feature.json files"
         uses: devcontainers/action@v1

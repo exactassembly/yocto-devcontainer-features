@@ -59,6 +59,14 @@ install_debian_packages() {
     # Modern Yocto host package set per
     # https://docs.yoctoproject.org/dev/ref-manual/system-requirements.html
     # (walnascar / scarthgap entries) merged with the willmmiles legacy list.
+    #
+    # trixie compatibility notes:
+    #  - 'liblz4-tool' was a transitional package removed in trixie; the lz4
+    #    binary is now in the 'lz4' top-level package.
+    #  - 'libegl1-mesa' was renamed: runtime is 'libegl1', dev headers are
+    #    'libegl-dev'. Yocto's official prereq list never required it; we
+    #    drop it entirely.
+    #  - 'libsdl1.2-dev' is gone (SDL1.2 EOL upstream). Not needed by Yocto.
     local package_list="gawk \
         wget \
         git \
@@ -80,13 +88,11 @@ install_debian_packages() {
         xz-utils \
         debianutils \
         iputils-ping \
-        libegl1-mesa \
-        libsdl1.2-dev \
         pylint \
         xterm \
         iproute2 \
         zstd \
-        liblz4-tool \
+        lz4 \
         file \
         locales \
         libacl1 \
