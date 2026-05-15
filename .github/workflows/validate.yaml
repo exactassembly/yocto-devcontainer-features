@@ -1,14 +1,15 @@
-name: "Validate devcontainer-feature.json files"
+name: "Validate devcontainer feature definitions"
 on:
   workflow_dispatch:
   pull_request:
 
-# Force JavaScript actions onto Node 24. devcontainers/action@v1 is still
-# shipped pinned to Node 20 (issue devcontainers/action#203). Node 20 hits
-# hard EOL on the GitHub Actions runners on 2026-06-02 and is removed
-# 2026-09-16; this env var keeps the workflow green in the meantime.
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# This workflow intentionally does NOT use devcontainers/action@v1.
+# That action declares `runs.using: node20` in its action.yml, which makes
+# the GitHub Actions runner emit a Node-20 deprecation warning on every
+# run, even when FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 forces the action onto
+# Node 24 (see actions/runner#4295). We do structural validation in plain
+# shell + Python instead — no Node action, no warning, and the check runs
+# in seconds.
 
 jobs:
   validate:
@@ -16,8 +17,49 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: "Validate devcontainer-feature.json files"
-        uses: devcontainers/action@v1
-        with:
-          validate-only: "true"
-          base-path-to-features: "./src"
+      - name: "Each feature has a devcontainer-feature.json that parses as JSON"
+        run: |
+          set -e
+          shopt -s nullglob
+          found=0
+          for f in src/*/devcontainer-feature.json; do
+              found=$((found + 1))
+              echo "[json] $f"
+              python3 -m json.tool "$f" > /dev/null
+          done
+          if [ "$found" -eq 0 ]; then
+              echo "ERROR: no features found under src/*/devcontainer-feature.json" >&2
+              exit 1
+          fi
+          echo "Checked $found feature(s)."
+
+      - name: "Each feature declares the required 'id' and 'version' fields"
+        run: |
+          set -e
+          for f in src/*/devcontainer-feature.json; do
+              python3 - "$f" <<'PY'
+          import json, sys
+          path = sys.argv[1]
+          d = json.load(open(path))
+          missing = [k for k in ("id", "version") if not d.get(k)]
+          if missing:
+              print(f"ERROR: {path} missing required field(s): {', '.join(missing)}", file=sys.stderr)
+              sys.exit(1)
+          # Feature id must match the directory name (devcontainers spec).
+          dirname = path.split("/")[-2]
+          if d["id"] != dirname:
+              print(f"ERROR: {path}: id={d['id']!r} does not match dir name {dirname!r}", file=sys.stderr)
+              sys.exit(1)
+          print(f"{path}: id={d['id']} version={d['version']}")
+          PY
+          done
+
+      - name: "Install scripts pass bash -n syntax check"
+        run: |
+          set -e
+          shopt -s nullglob
+          for s in src/*/install.sh src/*/*.sh; do
+              [ -f "$s" ] || continue
+              echo "[bash -n] $s"
+              bash -n "$s"
+          done
