@@ -14,6 +14,7 @@ Published to GHCR at `ghcr.io/exactassembly/yocto-devcontainer-features/<feature
 | [`yocto-cooker`](src/yocto-cooker/) | Pip-installs [yocto-cooker](https://github.com/cpb-/yocto-cooker) and ships a `broiler.sh` wrapper. **Maintained for back-compat.** Upstream cooker has not shipped since 2023; new projects should use `kas`. | `yocto-host` + `yocto-sstate` |
 | [`zephyr-sdk`](src/zephyr-sdk/) | Downloads + installs a pinned [Zephyr SDK](https://github.com/zephyrproject-rtos/sdk-ng) release, optionally pip-installs `west`. Use when one container builds both a Yocto image and Zephyr firmware. | `yocto-host` (or standalone) |
 | [`openocd`](src/openocd/) | Installs OpenOCD with FTDI/MPSSE support. Apt-installs by default, source-builds if a pinned 0.12.0+ is needed. Optional FT232H udev rule. | `zephyr-sdk` for bench smoke tests |
+| [`jlink`](src/jlink/) | Installs the Segger J-Link Linux package (`JLinkExe`, `JLinkGDBServer`, …) plus its X11/xcb runtime deps via `apt-get install ./jlink.deb`. | `zephyr-sdk` for `west flash -r jlink` |
 
 ## Typical project setup
 

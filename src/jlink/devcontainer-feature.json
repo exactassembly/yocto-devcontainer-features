@@ -1,0 +1,16 @@
+{
+    "id": "jlink",
+    "name": "Segger J-Link",
+    "version": "1.0.0",
+    "description": "Installs the Segger J-Link Linux package (JLinkExe, JLinkGDBServer, JLinkRTTClient, …) and its X11/xcb/xkbcommon runtime dependencies. Used by `west flash -r jlink`, Cortex-Debug, and any IDE that drives a Segger J-Link / J-Trace probe. Downloads the .deb from segger.com at image build time using the standard CLI license-accept POST.",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "J-Link version. 'latest' downloads the current package from segger.com (JLink_Linux_<arch>.deb). Otherwise pass a Segger version string like 'V844a' which is interpolated into the archived URL JLink_Linux_<version>_<arch>.deb (see https://www.segger.com/downloads/jlink/ for the list of archived versions). Pin a specific version for reproducible images."
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ]
+}
