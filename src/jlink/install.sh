@@ -63,8 +63,43 @@ wget -q --post-data "accept_license_agreement=accepted&non_emb_ctr=confirmed&sub
     "https://www.segger.com/downloads/jlink/${PKG}" \
     -O "${TMP}/jlink.deb"
 
+# Segger's postinst calls `udevadm control --reload-rules` to refresh host
+# udev rules. Two failure modes inside an image build:
+#   1. Slim bases (e.g. python:3.13-trixie) ship without the `udev` package,
+#      so udevadm is not on PATH at all and the postinst aborts with
+#      "udevadm: not found".
+#   2. Even when `udev` is present, there is no udev daemon to talk to
+#      inside the build sandbox, so `udevadm control --reload-rules` returns
+#      non-zero and Segger's postinst exits with "Failed to update udevadm
+#      rules." either way.
+#
+# Drop a no-op `udevadm` shim on the maintainer-script PATH for the duration
+# of the .deb install. dpkg hard-codes that PATH to
+# `/usr/sbin:/usr/bin:/sbin:/bin` (NOT /usr/local/sbin), so the shim has to
+# live in one of those. /usr/sbin wins over /usr/bin where udev would put
+# the real binary, so this works whether or not `udev` is also installed.
+# Udev rules are a host-side concern — the .rules file the package ships
+# is still placed under /etc/udev/rules.d/ and applies when the host (not
+# the container) reloads udev.
+SHIM=/usr/sbin/udevadm
+SHIM_INSTALLED=
+if [ ! -e "${SHIM}" ]; then
+    cat > "${SHIM}" <<'EOF'
+#!/bin/sh
+# Image-build no-op installed by ghcr.io/exactassembly/yocto-devcontainer-features/jlink.
+# Removed at the end of the feature install.
+exit 0
+EOF
+    chmod +x "${SHIM}"
+    SHIM_INSTALLED=1
+fi
+
 # Load-bearing: apt resolves declared deps; dpkg -i would not.
 apt-get install -y "${TMP}/jlink.deb"
+
+if [ -n "${SHIM_INSTALLED}" ]; then
+    rm -f "${SHIM}"
+fi
 
 apt-get clean
 rm -rf /var/lib/apt/lists/*

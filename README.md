@@ -26,10 +26,31 @@ For a project that builds **both a Yocto image and Zephyr firmware** in one cont
     "ghcr.io/exactassembly/yocto-devcontainer-features/yocto-host:1":     { "release": "walnascar" },
     "ghcr.io/exactassembly/yocto-devcontainer-features/yocto-sstate:1":   {},
     "ghcr.io/exactassembly/yocto-devcontainer-features/kas:1":            { "version": "5.2", "menu_file": "yocto/kas-menu.yml" },
-    "ghcr.io/exactassembly/yocto-devcontainer-features/zephyr-sdk:1":     { "version": "0.17.4", "toolchains": "arm-zephyr-eabi" },
+    "ghcr.io/exactassembly/yocto-devcontainer-features/zephyr-sdk:2":     { "version": "0.17.4", "toolchains": "arm-zephyr-eabi" },
     "ghcr.io/exactassembly/yocto-devcontainer-features/openocd:1":        {}
 }
 ```
+
+For a **Zephyr-only project** (firmware only, no Yocto image build):
+
+```jsonc
+"features": {
+    "ghcr.io/devcontainers/features/common-utils:2":                      {},
+    "ghcr.io/devcontainers/features/python:1":                            { "version": "3.11" },
+    "ghcr.io/exactassembly/yocto-devcontainer-features/zephyr-sdk:2":     { "version": "0.17.4", "toolchains": "arm-zephyr-eabi" },
+    "ghcr.io/exactassembly/yocto-devcontainer-features/openocd:1":        {},
+    "ghcr.io/exactassembly/yocto-devcontainer-features/jlink:1":          { "version": "V794e" }
+}
+```
+
+A slim Python base image (e.g. `mcr.microsoft.com/devcontainers/python:1-3.11-trixie`) is enough for this stack — none of the Yocto-host apt set is needed. The image rebuilds in ~5 min versus ~30 min for the full Yocto + Zephyr combo, which is the main reason to keep firmware-only projects on their own devcontainer.
+
+**Why the `jlink.version` pin.** The default (`latest`) tracks the current Segger release, which is fine for ad-hoc bring-up but two specific cases warrant pinning:
+
+- **NCS / NRF Connect SDK forks.** Nordic publishes a "tested with" JLink version in each NCS release notes (the Toolchain Manager's bundled JLink). Newer Segger releases routinely break `west flash --runner nrfjprog` and the SES debugger integration on NCS branches. Pin to the version the matching NCS release calls out.
+- **west's `jlink` runner output parser.** Recent JLink releases have changed `JLinkExe` banner and progress strings in ways that confuse Zephyr's [`runners.jlink`](https://github.com/zephyrproject-rtos/zephyr/blob/main/scripts/west_commands/runners/jlink.py) parser — `west flash -r jlink` reports spurious failures even when the image lands correctly on the target. Until upstream Zephyr catches up, pinning to a known-good Segger (e.g. `V794e`, `V796s`, or whatever your CI passed against) is the documented workaround.
+
+Browse the archived versions at <https://www.segger.com/downloads/jlink/> — any string of the form `V<NNN><letter>` that appears in a filename there is valid for the `version` option.
 
 For a Yocto-only project:
 
